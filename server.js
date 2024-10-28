@@ -1,6 +1,7 @@
 const express = require('express');
 const productsRoute = require('./API/productApi');
 const usersRoute = require('./API/userApi');
+const fakeRoute = require('./API/fakeApi')
 const bodyParser = require('body-parser');
 const cors = require('cors')
 
@@ -12,6 +13,7 @@ app.use(cors())
 app.use(bodyParser.json());
 app.use('/products', productsRoute);
 app.use('/user', usersRoute);
+app.use('/fake', fakeRoute);
 
 const port = process.env.PORT || 4000
 app.listen(port, () => console.log(`Server is running on port ${port}...`));
