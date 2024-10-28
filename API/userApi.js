@@ -48,7 +48,7 @@ router.post('/login', async (req, res) => {
         if (!passwordMatch) {
             return res.status(401).json({ error: "Username or Password is incorrect" });
         }
-        return res.status(200).json({ message: "Login successful" });
+        return res.status(200).json({ message: "Login successful", userData: userExist });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
