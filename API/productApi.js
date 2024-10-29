@@ -54,11 +54,11 @@ router.get('/view-product', async(req, res) => {
     }
    
      if(resFromPincodes['Logistics Provider'] === 'Provider A'){
-        return res.status(999).json({message: 'Stock available', payload: {provider: 'Provider A'}})
+        return res.status(200).json({message: 'Stock available', payload: {provider: 'Provider A'}})
      }else if(resFromPincodes['Logistics Provider'] === 'Provider B'){
-      return res.status(999).json({message: 'Stock available', payload: {provider: 'Provider B'}})
+      return res.status(200).json({message: 'Stock available', payload: {provider: 'Provider B'}})
      }else{
-      return res.status(999).json({message: 'Stock available', payload: {provider: 'General Partner'}})
+      return res.status(200).json({message: 'Stock available', payload: {provider: 'General Partner'}})
      }
    
 })
