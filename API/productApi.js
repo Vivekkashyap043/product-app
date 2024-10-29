@@ -10,7 +10,7 @@ router.get('/all-products', async (req, res) => {
     const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit to 10
     const db = await connectToDatabase(); // Reuse the existing database instance
     const productsCollection = db.collection('products'); // Replace with your collection name
-    
+
     // Convert page and limit to integers
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
@@ -20,7 +20,7 @@ router.get('/all-products', async (req, res) => {
 
     // Fetch products from the database
     const products = await productsCollection.find({}).skip(skip).limit(limitNumber).toArray();
-    
+
     // Fetch total count of products for pagination
     const totalProducts = await productsCollection.countDocuments();
 
@@ -35,38 +35,30 @@ router.get('/all-products', async (req, res) => {
 });
 
 
-router.get('/view-product', async(req, res) => {
-     const { productID, pincode } = req.query;
-     console.log("object ",productID," ",pincode)
-     const db = await connectToDatabase(); // Reuse the existing database instance
-     const stockCollection = db.collection('stock')
-     const pincodesCollection = db.collection('pincodes')
+router.get('/view-product', async (req, res) => {
+  const { productID, pincode } = req.query;
+  console.log("object ", productID, " ", pincode)
+  const db = await connectToDatabase(); // Reuse the existing database instance
+  const stockCollection = db.collection('stock')
+  const pincodesCollection = db.collection('pincodes')
 
-     const resultfromStock = await stockCollection.findOne({ 'Product ID': Number(productID) });
-     console.log("resfrom stk ", resultfromStock)
-     if(!resultfromStock['Stock Available']){
-       return res.status(500).json({ message: 'Stock not available' });
-     }
+  const resultfromStock = await stockCollection.findOne({ 'Product ID': Number(productID) });
+  console.log("resfrom stk ", resultfromStock)
+  if (!resultfromStock['Stock Available']) {
+    return res.status(500).json({ message: 'Stock not available' });
+  }
 
-     const resFromPincodes = await pincodesCollection.findOne({Pincode: Number(pincode)})
-     if(!resFromPincodes){
-      return res.status(404).json({ message: 'Pincode not found' });
-    }
-   
-     if(resFromPincodes['Logistics Provider'] === 'Provider A'){
-        return res.status(200).json({message: 'Stock available', payload: {provider: 'Provider A'}})
-     }else if(resFromPincodes['Logistics Provider'] === 'Provider B'){
-      return res.status(200).json({message: 'Stock available', payload: {provider: 'Provider B'}})
-     }else{
-      return res.status(200).json({message: 'Stock available', payload: {provider: 'General Partner'}})
-     }
-   
+  const resFromPincodes = await pincodesCollection.findOne({ Pincode: Number(pincode) })
+  if (!resFromPincodes) {
+    return res.status(404).json({ message: 'Pincode not found' });
+  }
+  return res.status(200).json({ message: 'Stock available', payload: { provider: resFromPincodes["Logistics Provider"], TAT: resFromPincodes.TAT } })
 })
 
 router.get('/order', async (req, res) => {
   try {
-    const { pincode,productID } = req.query; // Change this to access query parameters
-    console.log("object: ",pincode);
+    const { pincode, productID } = req.query; // Change this to access query parameters
+    console.log("object: ", pincode);
     const db = await connectToDatabase(); // Reuse the existing database instance
     const pincodesCollection = db.collection('pincodes');
     const stcockCollection = db.collection('stock')
@@ -74,24 +66,24 @@ router.get('/order', async (req, res) => {
     const result = await pincodesCollection.findOne({ Pincode: Number(pincode) });
     console.log("pin : ", result)
 
-    if(!result){
+    if (!result) {
       return res.status(404).json({ message: 'Pincode not found' });
     }
 
     const resultfromStock = await stcockCollection.findOne({ 'Product ID': Number(productID) });
     console.log("resfrom stk ", resultfromStock)
-    if(!resultfromStock['Stock Available']){
+    if (!resultfromStock['Stock Available']) {
       return res.status(500).json({ message: 'Stock not available' });
     }
 
-    if(res['Logistics Provider'] === 'Provider A'){
+    if (res['Logistics Provider'] === 'Provider A') {
 
-    }else if(res['Logistics Provider'] === 'Provider B'){
+    } else if (res['Logistics Provider'] === 'Provider B') {
 
-    }else{
+    } else {
 
     }
-    
+
   } catch (error) {
     console.error('Failed to retrieve products', error);
     res.status(500).json({ error: 'Failed to retrieve products' });
